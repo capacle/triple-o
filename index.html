@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Triple-O</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oi&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+   :root{
+      --bg: #f8ebd7;
+      --ink: #221f1c;
+      --muted: #66564c;
+
+      --card: #fff7e6;
+      --field: #f8ebd7;
+      --field-ink: #221f1c;
+
+      --accent: #111111;
+      --accent-2: #ffd966;
+      --line: rgba(0,0,0,.14);
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+
+      --radius: 18px;
+      --radius-sm: 12px;
+      --dock-gap: 16px;
+    }
+
+    *{ box-sizing: border-box; }
+
+    body{
+      margin:0;
+      font-family: "Fraunces", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.35;
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 18px 14px 40px; }
+
+
+    .wavy-line{
+      --s: 20px;
+      --b: 5px;
+      --m: 0.4;
+      --gap: 5px;
+      --R: calc(var(--s)*sqrt(var(--m)*var(--m) + 1) + var(--b)/2);
+      --line-h: calc(2*var(--R));
+      --step: calc(var(--gap) + var(--b));
+      height: calc(var(--line-h) + 2*var(--step));
+      width: 100%;
+      margin: 0 0 2px;
+      position: relative;
+    }
+    .wavy-line span{
+      position: absolute;
+      left: 0; right: 0;
+      height: var(--line-h);
+      --_g: #0000 calc(99% - var(--b)), #000 calc(101% - var(--b)) 99%, #0000 101%;
+      mask:
+        radial-gradient(var(--R) at left 50% bottom calc(-1*var(--m)*var(--s)), var(--_g))
+         calc(50% - 2*var(--s)) calc(50% - var(--s)/2 - var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x,
+        radial-gradient(var(--R) at left 50% top calc(-1*var(--m)*var(--s)),var(--_g))
+         50% calc(50% + var(--s)/2 + var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x;
+      -webkit-mask:
+        radial-gradient(var(--R) at left 50% bottom calc(-1*var(--m)*var(--s)), var(--_g))
+         calc(50% - 2*var(--s)) calc(50% - var(--s)/2 - var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x,
+        radial-gradient(var(--R) at left 50% top calc(-1*var(--m)*var(--s)),var(--_g))
+         50% calc(50% + var(--s)/2 + var(--b)/2)/calc(4*var(--s)) calc(var(--s) + var(--b)) repeat-x;
+    }
+    .wavy-line span:nth-child(1){ top: 0; background: #EA237B; }
+    .wavy-line span:nth-child(2){ top: var(--step); background: #29ABD2; }
+    .wavy-line span:nth-child(3){ top: calc(2*var(--step)); background: #FCB040; }
+
+    header{ display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 10px 4px 16px; }
+    .brand{ display:flex; align-items:center; gap: 12px; user-select:none; }
+
+    .brand h1{
+      margin:0; line-height: .95; font-size: clamp(30px, 7.4vw, 62px);
+      font-family: "Oi", ui-serif, Georgia, serif;
+      font-weight: 400; letter-spacing: .5px; color: #EA237B; text-transform: uppercase;
+      -webkit-text-stroke: 2.7px #000;
+      paint-order: stroke fill;
+      text-shadow:
+        -1px -1px 0 #000, 1px -1px 0 #000,
+        -1px  1px 0 #000, 1px  1px 0 #000;
+    }
+
+
+    .grid{ display:grid; gap: 14px; }
+    .card{
+      background: rgba(255,255,255,.45); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 14px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    .card h2{
+      margin: 0 0 12px; font-size: 20px; letter-spacing: .8px; text-transform: uppercase;
+      display:flex; align-items:center; justify-content:space-between; gap: 8px; color: #29acd1;
+      font-family: "Bungee", ui-sans-serif, system-ui, sans-serif; font-weight: 600;
+      -webkit-text-stroke: .55px #000; paint-order: stroke fill;
+      text-shadow: -0.8px -0.8px 0 #000, 0.8px -0.8px 0 #000, -0.8px 0.8px 0 #000, 0.8px 0.8px 0 #000;
+      transform: translateZ(0);
+    }
+
+    .section-roll{
+      font-size: 12px; color: var(--muted); background: transparent; border: 1px dashed rgba(0,0,0,.25);
+      border-radius: 999px; padding: 6px 10px; cursor:pointer; transition: background 0.2s; font-family: inherit;
+    }
+    .section-roll:hover{ background: rgba(255,255,255,.35); }
+
+    .field{
+      width: 100%; text-align:left; border: 1px solid rgba(0,0,0,.10); background: var(--field); color: var(--field-ink);
+      border-radius: var(--radius-sm); min-height: 40px; padding: 10px 12px; display: flex; align-items: center;
+      font-weight: 400; font-size: clamp(15px, 3vw, 18px); font-family: "Crimson Text", Georgia, serif; cursor:pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,.06); position: relative; overflow: hidden;
+    }
+    .field:active{ transform: translateY(1px); }
+    .field.sentence{ min-height: 54px; line-height: 1.35; }
+
+    .flash { animation: flashAnim 0.4s ease-out; }
+    @keyframes flashAnim {
+      0% { background-color: #fff; transform: scale(1.02); }
+      100% { background-color: var(--field); transform: scale(1); }
+    }
+
+    .field-row{ display:grid; gap: 10px; }
+    .two-col{ display:grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 760px){ .two-col{ grid-template-columns: 1fr 1fr; } }
+    .three-col{ display:grid; gap: 14px; grid-template-columns: 1fr; }
+    @media (min-width: 860px){ .three-col{ grid-template-columns: 1fr 1fr 1fr; } }
+
+    .small{ color: #2b2b2b; font-size: 14px; margin: 8px 0 0; font-weight: 500; line-height: 1.5; font-family: "Crimson Text", Georgia, serif; }
+    .inline-actions{ display:flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .mini{ appearance:none; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 10px; font-weight: 800; cursor:pointer; font-size: 12px; font-family: inherit; }
+    .mini:active{ transform: translateY(1px); }
+
+    .table-entry{ display:grid; grid-template-columns: 1fr 40px; gap: 8px 10px; align-items: center; }
+    .table-label{
+      grid-column: 1 / -1; font-weight: 700; letter-spacing: .2px; text-transform: uppercase; color: #2b2b2b;
+      font-size: 16px; opacity: .9; margin-bottom: -2px; font-family: "Crimson Text", Georgia, serif;
+    }
+    .add{
+      appearance:none; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 12px;
+      width: 40px; height: 40px; font-weight: 900; cursor:pointer; box-shadow: 0 6px 14px rgba(0,0,0,.06);
+      display:grid; place-items:center; line-height: 1; font-family: inherit;
+    }
+    .add:active{ transform: translateY(1px); }
+
+    .check-panel{ display:grid; gap: 12px; }
+    .check-result{
+      background: var(--field); border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 14px; display:grid; gap: 6px; min-height: 106px; box-shadow: 0 6px 14px rgba(0,0,0,.05);
+    }
+    .roll-number{ font-family: "Crimson Text", Georgia, serif; font-weight: 700; font-size: clamp(32px, 10vw, 58px); line-height: 1; }
+    .roll-label{ font-family: "Crimson Text", Georgia, serif; font-weight: 700; font-size: clamp(20px, 4.5vw, 30px); text-transform: uppercase; letter-spacing: -.2px; }
+    .roll-note{ color: var(--muted); font-size: 15px; font-weight: 600; font-family: "Crimson Text", Georgia, serif; }
+    .double-notice{
+      background: rgba(255,255,255,.58); border: 1px dashed rgba(0,0,0,.28); border-radius: var(--radius-sm);
+      padding: 10px 12px; color: #2b2b2b; font-size: 13px; font-weight: 700;
+    }
+    .choice-grid{ display:grid; gap: 10px; grid-template-columns: 1fr; }
+    @media (min-width: 620px){ .choice-grid{ grid-template-columns: 1fr 1fr; } }
+    .choice-card{
+      border: 1px solid rgba(0,0,0,.12); border-radius: var(--radius-sm); background: var(--field);
+      padding: 12px; cursor:pointer; text-align:left; font-family: "Crimson Text", Georgia, serif;
+    }
+    .choice-card.selected{ outline: 3px solid var(--accent-2); background: rgba(255,247,230,.92); }
+    .choice-card .roll-number{ font-size: 34px; }
+    .choice-card .roll-label{ font-size: 18px; }
+    .hidden{ display:none !important; }
+
+
+    /* Character sheets */
+    .character-card{ overflow: hidden; }
+    .character-tabs{
+      display:flex; gap: 8px; flex-wrap: wrap; margin: -2px 0 14px;
+    }
+    .char-tab{
+      appearance:none; border: 1px solid var(--line); background: rgba(255,255,255,.65); color: var(--ink);
+      border-radius: 999px; padding: 8px 12px; cursor:pointer; font-family: "Crimson Text", Georgia, serif;
+      font-size: 15px; font-weight: 700; max-width: 170px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+      box-shadow: 0 6px 14px rgba(0,0,0,.04);
+    }
+    .char-tab.active{ background: var(--field); outline: 2px solid #EA237B; }
+    .character-sheet{ display:grid; gap: 12px; }
+    .char-top{
+      display:grid; gap: 10px; grid-template-columns: 1fr;
+    }
+    @media (min-width: 760px){ .char-top{ grid-template-columns: 1fr 1.6fr; } }
+    .char-field-wrap{ display:grid; gap: 5px; }
+    .char-label{
+      font-family: "Crimson Text", Georgia, serif; font-weight: 700; font-size: 16px;
+      letter-spacing: .2px; text-transform: uppercase; color: #2b2b2b;
+    }
+    .char-input,
+    .trait-input,
+    .category-input{
+      width:100%; border: 1px solid rgba(0,0,0,.10); background: var(--field); color: var(--field-ink);
+      border-radius: var(--radius-sm); padding: 10px 12px; font-family: "Crimson Text", Georgia, serif;
+      font-size: clamp(15px, 2.8vw, 18px); box-shadow: 0 6px 14px rgba(0,0,0,.04);
+    }
+    .char-input{ min-height: 42px; }
+    .traits-head{
+      display:grid; grid-template-columns: 44px 1fr 86px; gap: 10px; align-items:end;
+      margin-top: 2px;
+    }
+    .traits-title{ grid-column: 1 / -1; margin: 2px 0 -2px; }
+    .trait-head-label{
+      font-family: "Crimson Text", Georgia, serif; font-weight: 700; font-size: 14px; text-transform: uppercase; color:#2b2b2b;
+    }
+    .trait-row{
+      display:grid; grid-template-columns: 44px 1fr 86px; gap: 10px; align-items:center;
+    }
+    .trait-state{
+      appearance:none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(0,0,0,.16);
+      background: rgba(255,255,255,.72); cursor:pointer; display:grid; place-items:center; box-shadow: 0 6px 14px rgba(0,0,0,.04);
+      position:relative;
+    }
+    .trait-state::before{ content:""; width: 20px; height: 20px; border-radius: 3px; border: 2px dashed rgba(0,0,0,.18); background: transparent; }
+    .trait-state.default::before{ border-style: solid; background: rgba(0,0,0,.3); }
+    .trait-state.prevalent{ border-width: 1px; border-color: rgba(0,0,0,.16); }
+    .trait-state.prevalent::before{ border-style: solid; border-width: 3px; border-color: #000; background: rgba(0,0,0,.5); box-shadow: none; }
+    .trait-state.temporary::before{
+      border-style: solid; border-width: 1px; background: repeating-linear-gradient(135deg, rgba(0,0,0,.4) 0 3px, transparent 3px 6px);
+    }
+    .trait-state:active{ transform: translateY(1px); }
+    .trait-input{ min-height: 42px; }
+    .category-input{ min-height: 42px; text-align:center; font-weight:700; }
+    .character-tools{ display:flex; gap: 10px; flex-wrap: wrap; margin-top: 2px; }
+    .status-legend{
+      display:grid; gap: 6px; grid-template-columns: repeat(2, minmax(0, 1fr));
+      font-family: "Crimson Text", Georgia, serif; font-size: 13px; color:#2b2b2b; margin-top: 2px;
+    }
+    @media (min-width: 700px){ .status-legend{ grid-template-columns: repeat(4, auto); justify-content:start; column-gap: 18px; } }
+    .legend-item{ display:flex; gap: 6px; align-items:center; }
+    .legend-swatch{ width: 20px; height: 20px; border-radius: 3px; border: 1.5px dashed rgba(0,0,0,.20); background: rgba(255,255,255,.72); }
+    .legend-swatch.default{ border-style: solid; background: rgba(0,0,0,.3); }
+    .legend-swatch.prevalent{ border-style: solid; border-width: 2.5px; border-color: #000; background: rgba(0,0,0,.5); box-shadow: none; }
+    .legend-swatch.temporary{ border-style: solid; border-width: 1px; background: repeating-linear-gradient(135deg, rgba(0,0,0,.4) 0 3px, transparent 3px 6px); }
+    @media (max-width: 520px){
+      .traits-head{ grid-template-columns: 40px 1fr 68px; gap: 8px; }
+      .trait-row{ grid-template-columns: 40px 1fr 68px; gap: 8px; }
+      .trait-state{ width: 38px; height: 38px; }
+      .category-input{ padding-left: 8px; padding-right: 8px; }
+    }
+
+
+    .scratch{ display:grid; gap: 10px; }
+    textarea{
+      width: 100%; min-height: 160px; resize: vertical; border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 12px; font-family: "Crimson Text", Georgia, serif; font-size: clamp(15px, 2.5vw, 18px); line-height: 1.6;
+      box-shadow: 0 8px 18px rgba(0,0,0,.05); background: rgba(255,255,255,.85); color: var(--ink);
+    }
+
+    .scratch-dock{
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: var(--dock-gap); width: min(980px, calc(100% - 28px)); z-index: 999;
+      padding: 10px 12px 12px; background: rgba(255,255,255,.10); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      border-radius: calc(var(--radius) + 6px); border: 1px solid rgba(255,255,255,.18);
+    }
+    .scratchpad-card{ margin: 0; background: rgba(255,255,255,.30); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 -10px 24px rgba(0,0,0,.10); padding: 14px; }
+    .scratchpad-card textarea{ min-height: 110px; max-height: 28vh; resize: vertical; }
+
+    .toast{
+      position: fixed; left: 50%; top: 80px; transform: translateX(-50%); background: rgba(0,0,0,.86); color: #fff;
+      padding: 10px 12px; border-radius: 999px; font-size: 13px; opacity: 0; pointer-events:none; transition: opacity .2s ease;
+      max-width: min(92vw, 520px); text-align:center; z-index: 2000;
+    }
+    .toast.show{ opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="wavy-line" aria-hidden="true"><span></span><span></span><span></span></div>
+    <header>
+      <div class="brand">
+        <div><h1>Triple-O</h1></div>
+      </div>
+    </header>
+
+    <main class="grid">
+      <section class="card" data-section="triple-o">
+        <h2>Triple-O Check</h2>
+        <div class="check-panel">
+          <div class="check-result" id="singleResult">
+            <div class="roll-number" id="checkNumber">—</div>
+            <div class="roll-label" id="checkLabel">Roll 1d6</div>
+            <div class="roll-note" id="checkNote">4–6 The Obvious · 2–3 The Option · 1 The Odd</div>
+          </div>
+
+          <div class="choice-grid hidden" id="doubleResults">
+            <button class="choice-card" id="choiceA" data-action="choose-double" data-choice="0">
+              <div class="roll-number" id="choiceANumber">—</div>
+              <div class="roll-label" id="choiceALabel">—</div>
+              <div class="roll-note">Choice A</div>
+            </button>
+            <button class="choice-card" id="choiceB" data-action="choose-double" data-choice="1">
+              <div class="roll-number" id="choiceBNumber">—</div>
+              <div class="roll-label" id="choiceBLabel">—</div>
+              <div class="roll-note">Choice B</div>
+            </button>
+          </div>
+
+          <div class="double-notice hidden" id="doubleNotice"></div>
+
+          <div class="inline-actions">
+            <button class="mini" id="rollCheckBtn">Roll 1d6</button>
+            <button class="mini" id="doubleDownBtn">Double-down</button>
+            <button class="mini" data-action="stash" data-field="check">+ Save</button>
+          </div>
+          <p class="small">Double-down rolls 2d6 and lets you pick your preferred behavior. If you roll doubles, that behavior becomes more prevalent.</p>
+        </div>
+      </section>
+
+      <section class="card" data-section="spark">
+        <h2>Spark tables <button class="section-roll" data-action="roll-section" data-section="spark">Roll section</button></h2>
+        <div class="three-col">
+          <div class="field-row"><div class="table-entry"><div class="table-label">Action</div><button class="field" id="actionField" data-action="roll-field" data-group="spark" data-field="action">—</button><button class="add" title="Save Action" data-action="stash-single" data-group="spark" data-field="action">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Focus</div><button class="field" id="focusField" data-action="roll-field" data-group="spark" data-field="focus">—</button><button class="add" title="Save Focus" data-action="stash-single" data-group="spark" data-field="focus">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Method</div><button class="field" id="methodField" data-action="roll-field" data-group="spark" data-field="method">—</button><button class="add" title="Save Method" data-action="stash-single" data-group="spark" data-field="method">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Dynamics</div><button class="field" id="dynamicsField" data-action="roll-field" data-group="spark" data-field="dynamics">—</button><button class="add" title="Save Dynamics" data-action="stash-single" data-group="spark" data-field="dynamics">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Disposition</div><button class="field" id="dispositionField" data-action="roll-field" data-group="spark" data-field="disposition">—</button><button class="add" title="Save Disposition" data-action="stash-single" data-group="spark" data-field="disposition">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Motivation</div><button class="field" id="motivationField" data-action="roll-field" data-group="spark" data-field="motivation">—</button><button class="add" title="Save Motivation" data-action="stash-single" data-group="spark" data-field="motivation">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Approaches</div><button class="field" id="approachesField" data-action="roll-field" data-group="spark" data-field="approaches">—</button><button class="add" title="Save Approaches" data-action="stash-single" data-group="spark" data-field="approaches">+</button></div></div>
+        </div>
+        <div class="inline-actions"><button class="mini" data-action="stash" data-field="spark">+ Save all</button></div>
+      </section>
+
+      <section class="card" data-section="specific">
+        <h2>Specific tables <button class="section-roll" data-action="roll-section" data-section="specific">Roll section</button></h2>
+        <div class="two-col">
+          <div class="field-row"><div class="table-entry"><div class="table-label">Combat</div><button class="field sentence" id="combatField" data-action="roll-field" data-group="specific" data-field="combat">—</button><button class="add" title="Save Combat" data-action="stash-single" data-group="specific" data-field="combat">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Social</div><button class="field sentence" id="socialField" data-action="roll-field" data-group="specific" data-field="social">—</button><button class="add" title="Save Social" data-action="stash-single" data-group="specific" data-field="social">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Exploration</div><button class="field sentence" id="explorationField" data-action="roll-field" data-group="specific" data-field="exploration">—</button><button class="add" title="Save Exploration" data-action="stash-single" data-group="specific" data-field="exploration">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Delving</div><button class="field sentence" id="delvingField" data-action="roll-field" data-group="specific" data-field="delving">—</button><button class="add" title="Save Delving" data-action="stash-single" data-group="specific" data-field="delving">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Interpretation</div><button class="field sentence" id="interpretationField" data-action="roll-field" data-group="specific" data-field="interpretation">—</button><button class="add" title="Save Interpretation" data-action="stash-single" data-group="specific" data-field="interpretation">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Downtime</div><button class="field sentence" id="downtimeField" data-action="roll-field" data-group="specific" data-field="downtime">—</button><button class="add" title="Save Downtime" data-action="stash-single" data-group="specific" data-field="downtime">+</button></div></div><div class="field-row"><div class="table-entry"><div class="table-label">Planning</div><button class="field sentence" id="planningField" data-action="roll-field" data-group="specific" data-field="planning">—</button><button class="add" title="Save Planning" data-action="stash-single" data-group="specific" data-field="planning">+</button></div></div>
+        </div>
+        <div class="inline-actions"><button class="mini" data-action="stash" data-field="specific">+ Save all</button></div>
+      </section>
+
+
+      <section class="card character-card" data-section="characters">
+        <h2>Characters</h2>
+        <div class="character-tabs" id="characterTabs" role="tablist" aria-label="Character sheets"></div>
+        <div class="character-sheet" id="characterSheet">
+          <div class="char-top">
+            <label class="char-field-wrap">
+              <span class="char-label">Name</span>
+              <input class="char-input" id="charName" type="text" autocomplete="off" placeholder="Character name">
+            </label>
+            <label class="char-field-wrap">
+              <span class="char-label">Details</span>
+              <input class="char-input" id="charDetails" type="text" autocomplete="off" placeholder="Look, role, background, notes…">
+            </label>
+          </div>
+
+          <div class="traits-head">
+            <div class="traits-title table-label">Traits</div>
+            <div class="trait-head-label">Status</div>
+            <div class="trait-head-label">Trait</div>
+            <div class="trait-head-label">Category</div>
+          </div>
+          <div class="field-row" id="traitRows"></div>
+          <div class="status-legend" aria-label="Trait status legend">
+            <div class="legend-item"><span class="legend-swatch empty"></span>Empty</div>
+            <div class="legend-item"><span class="legend-swatch default"></span>Default</div>
+            <div class="legend-item"><span class="legend-swatch prevalent"></span>Prevalent</div>
+            <div class="legend-item"><span class="legend-swatch temporary"></span>Temporary</div>
+          </div>
+          <div class="character-tools">
+            <button class="mini" id="addTraitBtn">+ Add Trait</button>
+            <button class="mini" id="clearCharacterBtn">Clear character</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="scratch-dock" id="scratchDock">
+        <section class="card scratchpad-card">
+          <h2>Scratchpad</h2>
+          <div class="scratch">
+            <textarea id="scratchpad" placeholder="Saved lines show up here…"></textarea>
+            <div class="inline-actions">
+              <button class="mini" id="copyBtn">Copy</button>
+              <button class="mini" id="clearBtn">Clear</button>
+              <button class="mini" id="undoBtn">Undo</button>
+            </div>
+            <p class="small">Tip: click any field to roll it. Use + buttons to save one entry, or “Save all” to save the section.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const OPTIONS = {
+      "spark": {
+            "action": [
+                  "Abort",
+                  "Advance",
+                  "Aim",
+                  "Block",
+                  "Break",
+                  "Challenge",
+                  "Climb",
+                  "Collide",
+                  "Combat",
+                  "Concentrate",
+                  "Consolidate",
+                  "Coordinate",
+                  "Cover",
+                  "Deceive",
+                  "Deflect",
+                  "Delve",
+                  "Destroy",
+                  "Dodge",
+                  "Endure",
+                  "Force",
+                  "Grab",
+                  "Help",
+                  "Impact",
+                  "Intensify",
+                  "Invest",
+                  "Knock down",
+                  "Lose",
+                  "Oppose",
+                  "Penetrate",
+                  "Persevere",
+                  "Probe",
+                  "Protect",
+                  "Retreat",
+                  "Separate",
+                  "Stun",
+                  "Surprise"
+            ],
+            "focus": [
+                  "Advantage",
+                  "Ally",
+                  "Balance",
+                  "Barrier",
+                  "Chance",
+                  "Control",
+                  "Courage",
+                  "Damage",
+                  "Defense",
+                  "Determination",
+                  "Environment",
+                  "Fear",
+                  "Ferocity",
+                  "Focus",
+                  "Impulse",
+                  "Instinct",
+                  "Maneuver",
+                  "Object",
+                  "Opening",
+                  "Position",
+                  "Posture",
+                  "Power",
+                  "Precision",
+                  "Pride",
+                  "Reach",
+                  "Resource",
+                  "Senses",
+                  "Speed",
+                  "Strategy",
+                  "Strength",
+                  "Subtlety",
+                  "Technique",
+                  "Weakness",
+                  "Weapon",
+                  "Wits",
+                  "Wound"
+            ],
+            "method": [
+                  "Adaptation",
+                  "Agility",
+                  "Camouflage",
+                  "Coercion",
+                  "Cunning",
+                  "Deception",
+                  "Distraction",
+                  "Fear",
+                  "Guile",
+                  "Imitation",
+                  "Improvisation",
+                  "Ingenuity",
+                  "Instinct",
+                  "Intimidation",
+                  "Knowledge",
+                  "Magic",
+                  "Manipulation",
+                  "Observation",
+                  "Patience",
+                  "Persistence",
+                  "Resilience",
+                  "Sacrifice",
+                  "Scheming",
+                  "Sorcery",
+                  "Speed",
+                  "Stealth",
+                  "Strategy",
+                  "Strength",
+                  "Subterfuge",
+                  "Surprise",
+                  "Technology",
+                  "Tenacity",
+                  "Terrain",
+                  "Trickery",
+                  "Violence",
+                  "Weapons"
+            ],
+            "dynamics": [
+                  "Admiring",
+                  "Affectionate",
+                  "Amused",
+                  "Comfortable",
+                  "Competitive",
+                  "Conflicted",
+                  "Contemptuous",
+                  "Deferential",
+                  "Defiant",
+                  "Dependent",
+                  "Disappointed",
+                  "Distant",
+                  "Envious",
+                  "Exasperated",
+                  "Fascinated",
+                  "Grateful",
+                  "Guilty",
+                  "Indifferent",
+                  "Inspired",
+                  "Intimidated",
+                  "Intrigued",
+                  "Judgmental",
+                  "Loyal",
+                  "Observant",
+                  "Patronizing",
+                  "Protective",
+                  "Resentful",
+                  "Respectful",
+                  "Skeptical",
+                  "Supportive",
+                  "Suspicious",
+                  "Sympathetic",
+                  "Teasing",
+                  "Threatened",
+                  "Trusting",
+                  "Uneasy"
+            ],
+            "disposition": [
+                  "Aggressive",
+                  "Aloof",
+                  "Ambivalent",
+                  "Antagonistic",
+                  "Bold",
+                  "Cautious",
+                  "Cheerful",
+                  "Confident",
+                  "Cooperative",
+                  "Curious",
+                  "Defensive",
+                  "Detached",
+                  "Dismissive",
+                  "Distrustful",
+                  "Eager",
+                  "Enthusiastic",
+                  "Friendly",
+                  "Guarded",
+                  "Helpful",
+                  "Hostile",
+                  "Indifferent",
+                  "Inquisitive",
+                  "Interested",
+                  "Inviting",
+                  "Open",
+                  "Optimistic",
+                  "Pessimistic",
+                  "Reluctant",
+                  "Resentful",
+                  "Respectful",
+                  "Suspicious",
+                  "Sympathetic",
+                  "Timid",
+                  "Uninterested",
+                  "Warm",
+                  "Wary"
+            ],
+            "motivation": [
+                  "Ambition",
+                  "Anger",
+                  "Atonement",
+                  "Betrayal",
+                  "Challenge",
+                  "Curiosity",
+                  "Despair",
+                  "Duty",
+                  "Empathy",
+                  "Envy",
+                  "Faith",
+                  "Fear",
+                  "Greed",
+                  "Guilt",
+                  "Hate",
+                  "Honor",
+                  "Hope",
+                  "Ideology",
+                  "Justice",
+                  "Knowledge",
+                  "Legacy",
+                  "Love",
+                  "Loyalty",
+                  "Mastery",
+                  "Obsession",
+                  "Passion",
+                  "Pride",
+                  "Regret",
+                  "Rivalry",
+                  "Sacrifice",
+                  "Shame",
+                  "Sorrow",
+                  "Survival",
+                  "Thrill",
+                  "Tradition",
+                  "Vengeance"
+            ],
+            "approaches": [
+                  "Aggressively",
+                  "Carefully",
+                  "Cheerfully",
+                  "Clumsily",
+                  "Covertly",
+                  "Daringly",
+                  "Decisively",
+                  "Desperately",
+                  "Diplomatically",
+                  "Directly",
+                  "Discreetly",
+                  "Dramatically",
+                  "Efficiently",
+                  "Erratically",
+                  "Frantically",
+                  "Gently",
+                  "Grudgingly",
+                  "Hastily",
+                  "Hesitantly",
+                  "Honestly",
+                  "Impulsively",
+                  "Indirectly",
+                  "Intuitively",
+                  "Lazily",
+                  "Loudly",
+                  "Methodically",
+                  "Naively",
+                  "Nervously",
+                  "Patiently",
+                  "Playfully",
+                  "Precisely",
+                  "Quietly",
+                  "Recklessly",
+                  "Reluctantly",
+                  "Ruthlessly",
+                  "Stubbornly"
+            ]
+      },
+      "specific": {
+            "combat": [
+                  "Aim carefully, wait for an opening",
+                  "Attack directly with primary weapon",
+                  "Attack with secondary weapon",
+                  "Attempt to disarm the enemy",
+                  "Attempt to flee",
+                  "Call for a combined action",
+                  "Call for parley",
+                  "Cast a spell or use a special ability",
+                  "Change elevation (climb, jump)",
+                  "Charge recklessly",
+                  "Create difficult terrain or obstacles",
+                  "Destroy enemy cover or resources",
+                  "Distract or mislead",
+                  "Draw attention/taunt the enemy",
+                  "Drop your weapons/surrender",
+                  "Fall back and regroup",
+                  "Flank or reposition",
+                  "Force movement (push, pull, reposition)",
+                  "Grapple or restrain an opponent",
+                  "Heal, buff, or protect an ally",
+                  "Help or assist an ally’s action",
+                  "Hold position and guard",
+                  "Improvise a weapon",
+                  "Look for a weakness",
+                  "Make a feint or fake attack",
+                  "Rally/inspire to boost morale",
+                  "Ready an action to respond to a trigger",
+                  "Set up an ambush or trap",
+                  "Switch weapons or tactics",
+                  "Take cover or duck behind something",
+                  "Target a leader or key figure",
+                  "Try to intimidate or scare them off",
+                  "Use a consumable item",
+                  "Use environment to their advantage",
+                  "Withdraw or disengage safely",
+                  "Yell a warning or call for help"
+            ],
+            "social": [
+                  "Appeal to emotion",
+                  "Appeal to logic",
+                  "Appeal to rules, laws, or customs",
+                  "Appeal to their values or beliefs",
+                  "Apply leverage/blackmail",
+                  "Ask probing questions",
+                  "Bluff or exaggerate",
+                  "Bribe or offer incentive",
+                  "Challenge to a duel, contest, or wager",
+                  "Compliment or flatter someone",
+                  "Confide a secret",
+                  "Directly inquire about a piece of information",
+                  "Empathize with their situation or feelings",
+                  "Exploit rivalries or conflicting interests",
+                  "Give a gift or token of goodwill",
+                  "Haggle over price or terms",
+                  "Invoke shared values, traditions, or history",
+                  "Invoke status, rank, or reputation",
+                  "Make a concession to move talks",
+                  "Misdirect or change the subject",
+                  "Name-drop important connections",
+                  "Offer a trade or bargain",
+                  "Offer help or assistance",
+                  "Perform/entertain to win favor",
+                  "Pretend to agree",
+                  "Promise something uncertain",
+                  "Read the room for mood and dynamics",
+                  "Set and enforce boundaries",
+                  "Share a personal story or vulnerability",
+                  "Speak honestly and openly",
+                  "Stay silent and observe",
+                  "Tell a joke or lighten the mood",
+                  "Try to charm or impress",
+                  "Try to find common ground",
+                  "Try to read their intentions",
+                  "Use threats or a show of force"
+            ],
+            "exploration": [
+                  "Assess the terrain ahead",
+                  "Check for traps or hazards",
+                  "Climb or seek vantage point",
+                  "Collect specimens or samples",
+                  "Cover tracks",
+                  "Document discoveries",
+                  "Forage for food, water, or supplies",
+                  "Hold back and observe",
+                  "Hunt or fish",
+                  "Leave messages or signs",
+                  "Listen for echoes/water/wind/animals",
+                  "Look for magical or strange phenomena",
+                  "Look for shelter from the elements",
+                  "Look for signs of civilization",
+                  "Look for tracks or signs of passage",
+                  "Map or mark the area",
+                  "Navigate by stars/sun/landmarks",
+                  "Observe wildlife patterns for clues",
+                  "Produce source of light or heat",
+                  "Propose change in marching order or pace",
+                  "Propose a short rest",
+                  "Rush to cover more ground",
+                  "Scout ahead carefully",
+                  "Search for hidden paths",
+                  "Send a companion or summoned being ahead",
+                  "Stand guard or keep watch",
+                  "Stay alert and move slowly",
+                  "Study the weather",
+                  "Suggest to press on for longer",
+                  "Suggest to split up the group",
+                  "Take a risk to save time",
+                  "Test the air or water",
+                  "Test the ground or depth",
+                  "Try a different route",
+                  "Try to identify plant, creature, or landmark",
+                  "Use a specialized instrument"
+            ],
+            "delving": [
+                  "Adjust formation or spacing",
+                  "Backtrack to a previous junction",
+                  "Check for pressure plates or tripwires",
+                  "Check for recent signs of passage or presence",
+                  "Check the ceiling for hazards or instability",
+                  "Climb or take the high ground",
+                  "Collect samples",
+                  "Cover tracks or conceal presence",
+                  "Create a distraction, lure, or decoy",
+                  "Document findings and warnings",
+                  "Examine remains or debris for clues",
+                  "Examine the structure for weaknesses",
+                  "Feel for air currents or temperature changes",
+                  "Follow an unexplored route",
+                  "Hide in the shadows or a crawlspace",
+                  "Listen at a door, wall, or passage",
+                  "Look for creature tracks, territorial signs, or lair markings",
+                  "Map the layout and connections",
+                  "Mark your path to avoid going in circles",
+                  "Peek into a room using a mirror or tool",
+                  "Probe the floor or walls with a pole",
+                  "Push recklessly onward",
+                  "Rally the group for a breather",
+                  "Scout ahead of the party",
+                  "Seal, block, or barricade an entry",
+                  "Search for hidden doors, passages, or mechanisms",
+                  "Search for hidden loot or cached supplies",
+                  "Search for inscriptions, carvings, or symbols",
+                  "Send a familiar or summoned creature ahead first",
+                  "Send a light source ahead",
+                  "Sense for magical residues",
+                  "Set tripwires, alarms, or warning markers",
+                  "Sniff the air for gas, smoke, rot, or chemicals",
+                  "Study architecture for purpose, origin, logic, or age",
+                  "Tend to wounds, fatigue, or morale",
+                  "Toss something ahead to test a room"
+            ],
+            "interpretation": [
+                  "Believe it’s a trap or test",
+                  "Believe they are being lied to or deceived",
+                  "Connect it to a larger pattern",
+                  "Dismiss it as a distraction or misdirection",
+                  "Feel a strong sense of personal duty or responsibility",
+                  "Feel distrust or suspicion",
+                  "Feel intense curiosity or fascination",
+                  "Feel nostalgia or déjà vu",
+                  "Feel overwhelmed",
+                  "Get a gut feeling that something is wrong",
+                  "Interpret it as a symbolic message or warning",
+                  "Misinterpret the situation entirely",
+                  "Misjudge the intentions of others",
+                  "Obsess over one detail",
+                  "Overanalyze every detail",
+                  "Rationalize it away",
+                  "Read it as a bad omen or a dark portent",
+                  "Recognize something as valuable or useful",
+                  "See connections to previous events",
+                  "See hidden danger or threat",
+                  "See it as a challenge or provocation",
+                  "Seize it as the perfect chance to act",
+                  "Sense opportunity or advantage",
+                  "Suspect a hidden reward or secret is nearby",
+                  "Suspect an ambush",
+                  "Take it as an invitation or welcome",
+                  "Take it at face value",
+                  "Take it personally",
+                  "Think it’s a coincidence",
+                  "Think it’s a performance or an act",
+                  "Treat it as a key clue to a larger mystery",
+                  "Treat it as fate or destiny",
+                  "Trust intuition over logic",
+                  "Try to read between the lines",
+                  "View it as a puzzle that needs to be solved",
+                  "View it as an audition or chance to impress"
+            ],
+            "downtime": [
+                  "Admit a fear or weakness",
+                  "Ask an ally for advice on a personal dilemma",
+                  "Ask someone about their motives",
+                  "Compare beliefs or philosophies",
+                  "Confess a secret, a lie, or a hidden motive",
+                  "Confide a lingering doubt",
+                  "Cook, share food or a drink with intention",
+                  "Debate a moral choice",
+                  "Discuss long-term dreams for when the journey ends",
+                  "Express admiration or gratitude",
+                  "Express homesickness or longing",
+                  "Gamble or play a game of chance or skill",
+                  "Grieve something lost",
+                  "Indulge in a personal coping mechanism or vice",
+                  "Inquire about an ally’s homeland or family",
+                  "Offer comfort or encouragement",
+                  "Ponder about the true nature of their enemies",
+                  "Practice a skill or hobby",
+                  "Pray, meditate, or observe a personal tradition",
+                  "Propose a solemn pact",
+                  "Question the group’s direction or purpose",
+                  "Rally the group with a speech or toast",
+                  "Share a cultural ritual, song, or saying",
+                  "Share a keepsake or memento and its story",
+                  "Share a story from their childhood",
+                  "Share rumors or speculation",
+                  "Sing, play music, or perform for the group",
+                  "Suggest a change in plans",
+                  "Talk about a dream you once had",
+                  "Talk about someone you left behind",
+                  "Tease, joke, or try to lighten the mood",
+                  "Tell a story of failure or glory",
+                  "Tend to wounds or worn gear",
+                  "Try to teach an ally a minor skill, trick, or phrase",
+                  "Wander off alone into the dark",
+                  "Write, sketch, or record thoughts"
+            ],
+            "planning": [
+                  "Avoid confrontation entirely",
+                  "Call in a favor or old debt",
+                  "Consult omens, divination, or spiritual guidance",
+                  "Contact or negotiate with a potential ally/faction",
+                  "Debate moral/ethical/practical costs",
+                  "Defer to the party’s leader",
+                  "Eliminate a specific threat first",
+                  "Follow instinct and improvise",
+                  "Gather more local rumors or intel",
+                  "Hire local help or muscle",
+                  "Learn the local terrain",
+                  "Look for a local contact, fence, informant, or insider",
+                  "Make final personal preparations",
+                  "Pivot to a secondary lead",
+                  "Plan a distraction or diversion",
+                  "Prepare healing or protective measures",
+                  "Propose a high-stakes gamble",
+                  "Push for a direct, immediate strike",
+                  "Question the entire mission’s purpose",
+                  "Repair, upgrade, enchant, or modify equipment",
+                  "Rest and recover before acting",
+                  "Restock and audit supplies",
+                  "Scrap the plan and start over",
+                  "Seek an expert, sage, guide, or specialist",
+                  "Send someone undercover",
+                  "Set a trap or ambush",
+                  "Set signals, code words, or fallback points",
+                  "Share previously withheld knowledge",
+                  "Split the party",
+                  "Study maps, charts, myths, or historical records",
+                  "Train or practice a specific skill/tactic",
+                  "Use bribery or social leverage",
+                  "Volunteer for the dangerous part",
+                  "Volunteer to scout ahead alone",
+                  "Wait for better timing/weather/specific event",
+                  "Warn of a potential trap"
+            ]
+      }
+};
+
+    const $ = (id) => document.getElementById(id);
+    const SPARK_FIELDS = ["action", "focus", "method", "dynamics", "disposition", "motivation", "approaches"];
+    const SPECIFIC_FIELDS = ["combat", "social", "exploration", "delving", "interpretation", "downtime", "planning"];
+    let currentCheck = null;
+    let doubleChoices = [];
+    const LS_KEY = "triple_o_scratchpad_v1";
+    const undoStack = [];
+
+    const CHARACTER_COUNT = 6;
+    const INITIAL_TRAIT_COUNT = 5;
+    const CHARACTER_LS_KEY = "triple_o_characters_v1";
+    const STATUS_ORDER = ["empty", "default", "prevalent", "temporary"];
+    let activeCharacter = 0;
+    let characters = createEmptyCharacters();
+
+    function titleCase(str){
+      return str.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase());
+    }
+
+    function rollFromArray(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+    function d6(){ return Math.floor(Math.random() * 6) + 1; }
+
+    function resultForRoll(n){
+      if(n >= 4) return { roll: n, label: "THE OBVIOUS", note: "The most predictable course of action." };
+      if(n >= 2) return { roll: n, label: "THE OPTION", note: "An alternative action they could take." };
+      return { roll: n, label: "THE ODD", note: "An unexpected or atypical behavior." };
+    }
+
+    function animateField(el){
+      el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+    }
+
+    function showToast(msg){
+      const t = $("toast"); t.textContent = msg; t.classList.add("show");
+      clearTimeout(showToast._timer); showToast._timer = setTimeout(() => t.classList.remove("show"), 1200);
+    }
+
+    function setSingleResult(result, extraNote=""){
+      currentCheck = result;
+      $("singleResult").classList.remove("hidden");
+      $("doubleResults").classList.add("hidden");
+      $("doubleNotice").classList.add("hidden");
+      $("doubleNotice").textContent = "";
+      $("checkNumber").textContent = result.roll;
+      $("checkLabel").textContent = result.label;
+      $("checkNote").textContent = extraNote || result.note;
+      animateField($("singleResult"));
+    }
+
+    function rollCheck(){
+      doubleChoices = [];
+      setSingleResult(resultForRoll(d6()));
+    }
+
+    function doubleDown(){
+      const a = resultForRoll(d6());
+      const b = resultForRoll(d6());
+      doubleChoices = [a,b];
+      const isDoubles = a.roll === b.roll;
+      doubleChoices.forEach(choice => choice.prevalent = isDoubles);
+      currentCheck = null;
+      $("singleResult").classList.add("hidden");
+      $("doubleResults").classList.remove("hidden");
+      $("choiceANumber").textContent = a.roll;
+      $("choiceALabel").textContent = a.label;
+      $("choiceBNumber").textContent = b.roll;
+      $("choiceBLabel").textContent = b.label;
+      $("choiceA").classList.remove("selected");
+      $("choiceB").classList.remove("selected");
+      const notice = $("doubleNotice");
+      if(isDoubles){
+        notice.textContent = "Doubles: " + a.label + " becomes more prevalent.";
+        notice.classList.remove("hidden");
+      } else {
+        notice.textContent = "Pick the result that feels more likely or more interesting.";
+        notice.classList.remove("hidden");
+      }
+      animateField($("choiceA")); animateField($("choiceB"));
+    }
+
+    function chooseDouble(index){
+      if(!doubleChoices[index]) return;
+      currentCheck = doubleChoices[index];
+      $("choiceA").classList.toggle("selected", index === 0);
+      $("choiceB").classList.toggle("selected", index === 1);
+      const notice = $("doubleNotice");
+      notice.textContent = "Chosen: " + currentCheck.roll + " — " + currentCheck.label + (currentCheck.prevalent ? " (becomes more prevalent)" : "");
+      notice.classList.remove("hidden");
+      showToast("Chosen: " + currentCheck.label);
+    }
+
+    function rollTable(group, field){
+      const el = $(field + "Field");
+      el.textContent = rollFromArray(OPTIONS[group][field]);
+      animateField(el);
+    }
+
+    function rollSection(section){
+      const fields = section === "spark" ? SPARK_FIELDS : SPECIFIC_FIELDS;
+      fields.forEach(f => rollTable(section, f));
+    }
+
+
+    function createEmptyTrait(){ return { text: "", category: "", status: "empty" }; }
+    function createEmptyCharacter(){
+      return {
+        name: "",
+        details: "",
+        traits: Array.from({length: INITIAL_TRAIT_COUNT}, createEmptyTrait)
+      };
+    }
+    function createEmptyCharacters(){
+      return Array.from({length: CHARACTER_COUNT}, () => createEmptyCharacter());
+    }
+    function normalizeCharacters(raw){
+      const base = createEmptyCharacters();
+      if(!Array.isArray(raw)) return base;
+      raw.slice(0, CHARACTER_COUNT).forEach((char, i) => {
+        if(!char || typeof char !== "object") return;
+        base[i].name = typeof char.name === "string" ? char.name : "";
+        base[i].details = typeof char.details === "string" ? char.details : "";
+        if(Array.isArray(char.traits)){
+          const normalizedTraits = char.traits.map(trait => {
+            const next = createEmptyTrait();
+            if(trait && typeof trait === "object"){
+              next.text = typeof trait.text === "string" ? trait.text : "";
+              next.category = typeof trait.category === "string" ? trait.category : "";
+              next.status = STATUS_ORDER.includes(trait.status) ? trait.status : "empty";
+            }
+            return next;
+          });
+          base[i].traits = normalizedTraits.length ? normalizedTraits : Array.from({length: INITIAL_TRAIT_COUNT}, createEmptyTrait);
+          while(base[i].traits.length < INITIAL_TRAIT_COUNT) base[i].traits.push(createEmptyTrait());
+        }
+      });
+      return base;
+    }
+    function persistCharacters(){
+      try { localStorage.setItem(CHARACTER_LS_KEY, JSON.stringify(characters)); } catch(e) {}
+    }
+    function restoreCharacters(){
+      try {
+        const stored = localStorage.getItem(CHARACTER_LS_KEY);
+        if(stored) characters = normalizeCharacters(JSON.parse(stored));
+      } catch(e) { characters = createEmptyCharacters(); }
+    }
+    function tabName(index){
+      const name = characters[index]?.name?.trim();
+      return name || "Character " + (index + 1);
+    }
+    function renderCharacterTabs(){
+      const tabs = $("characterTabs");
+      tabs.innerHTML = "";
+      characters.forEach((char, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "char-tab" + (index === activeCharacter ? " active" : "");
+        btn.textContent = tabName(index);
+        btn.setAttribute("data-action", "switch-character");
+        btn.setAttribute("data-index", index);
+        btn.setAttribute("role", "tab");
+        btn.setAttribute("aria-selected", index === activeCharacter ? "true" : "false");
+        tabs.appendChild(btn);
+      });
+    }
+    function renderTraitRows(){
+      const rows = $("traitRows");
+      rows.innerHTML = "";
+      characters[activeCharacter].traits.forEach((trait, index) => {
+        const row = document.createElement("div");
+        row.className = "trait-row";
+
+        const stateBtn = document.createElement("button");
+        stateBtn.type = "button";
+        stateBtn.className = "trait-state " + trait.status;
+        stateBtn.title = "Trait status: " + titleCase(trait.status) + ". Click to cycle.";
+        stateBtn.setAttribute("aria-label", "Trait " + (index + 1) + " status: " + trait.status);
+        stateBtn.setAttribute("data-action", "cycle-trait-status");
+        stateBtn.setAttribute("data-index", index);
+
+        const traitInput = document.createElement("input");
+        traitInput.className = "trait-input";
+        traitInput.type = "text";
+        traitInput.value = trait.text;
+        traitInput.placeholder = "Trait " + (index + 1);
+        traitInput.setAttribute("data-action", "edit-trait");
+        traitInput.setAttribute("data-index", index);
+        traitInput.setAttribute("data-part", "text");
+
+        const categoryInput = document.createElement("input");
+        categoryInput.className = "category-input";
+        categoryInput.type = "text";
+        categoryInput.value = trait.category;
+        categoryInput.placeholder = "—";
+        categoryInput.maxLength = 8;
+        categoryInput.setAttribute("data-action", "edit-trait");
+        categoryInput.setAttribute("data-index", index);
+        categoryInput.setAttribute("data-part", "category");
+
+        row.appendChild(stateBtn);
+        row.appendChild(traitInput);
+        row.appendChild(categoryInput);
+        rows.appendChild(row);
+      });
+    }
+    function renderCharacterSheet(){
+      const char = characters[activeCharacter];
+      $("charName").value = char.name;
+      $("charDetails").value = char.details;
+      renderCharacterTabs();
+      renderTraitRows();
+    }
+    function switchCharacter(index){
+      activeCharacter = Math.max(0, Math.min(CHARACTER_COUNT - 1, index));
+      renderCharacterSheet();
+    }
+    function updateCharacterField(field, value){
+      characters[activeCharacter][field] = value;
+      persistCharacters();
+      if(field === "name") renderCharacterTabs();
+    }
+    function cycleTraitStatus(index){
+      const trait = characters[activeCharacter].traits[index];
+      const current = STATUS_ORDER.indexOf(trait.status);
+      trait.status = STATUS_ORDER[(current + 1) % STATUS_ORDER.length];
+      persistCharacters();
+      renderTraitRows();
+    }
+    function updateTrait(index, part, value){
+      const trait = characters[activeCharacter].traits[index];
+      if(!trait) return;
+      if(part === "text") trait.text = value;
+      if(part === "category") trait.category = value;
+      persistCharacters();
+    }
+    function addTrait(){
+      characters[activeCharacter].traits.push(createEmptyTrait());
+      persistCharacters();
+      renderTraitRows();
+      showToast("Trait added");
+    }
+    function clearActiveCharacter(){
+      if(!confirm("Clear this Trait Sheet?")) return;
+      characters[activeCharacter] = createEmptyCharacter();
+      persistCharacters();
+      renderCharacterSheet();
+      showToast("Character cleared");
+    }
+
+    function persistScratch(){ try { localStorage.setItem(LS_KEY, $("scratchpad").value); } catch(e) {} }
+    function restoreScratch(){ try { const v = localStorage.getItem(LS_KEY); if (v != null) $("scratchpad").value = v; } catch(e) {} }
+
+    function appendToScratch(text){
+      const ta = $("scratchpad"); const trimmed = (text ?? "").toString().trim(); if(!trimmed) return;
+      undoStack.push(ta.value); ta.value = ta.value ? (ta.value.trimEnd() + "\n" + trimmed) : trimmed;
+      ta.scrollTop = ta.scrollHeight; persistScratch(); showToast("Saved to scratchpad");
+    }
+
+    function saveCheck(){
+      if(!currentCheck){ showToast("Choose a Double-down result first"); return; }
+      appendToScratch("TRIPLE-O CHECK: " + currentCheck.roll + " — " + currentCheck.label + (currentCheck.prevalent ? " (becomes more prevalent)" : ""));
+    }
+
+    function saveOne(field){
+      const text = $(field + "Field").textContent.trim();
+      if(text && text !== "—") appendToScratch(titleCase(field) + ": " + text);
+    }
+
+    function saveSection(group){
+      const fields = group === "spark" ? SPARK_FIELDS : SPECIFIC_FIELDS;
+      const lines = fields.map(f => {
+        const text = $(f + "Field").textContent.trim();
+        return text && text !== "—" ? titleCase(f) + ": " + text : null;
+      }).filter(Boolean);
+      if(lines.length) appendToScratch((group === "spark" ? "SPARK TABLES" : "SPECIFIC TABLES") + "\n" + lines.join("\n"));
+    }
+
+    const resizeObserver = new ResizeObserver(entries => {
+      for (let entry of entries) document.body.style.paddingBottom = (entry.contentRect.height + 30) + "px";
+    });
+    resizeObserver.observe($("scratchDock"));
+
+    $("rollCheckBtn").addEventListener("click", rollCheck);
+    $("doubleDownBtn").addEventListener("click", doubleDown);
+
+    document.addEventListener("click", (e) => {
+      const el = e.target.closest("[data-action]"); if(!el) return;
+      const action = el.getAttribute("data-action");
+      if(action === "choose-double") chooseDouble(Number(el.getAttribute("data-choice")));
+      if(action === "roll-section") rollSection(el.getAttribute("data-section"));
+      if(action === "roll-field") rollTable(el.getAttribute("data-group"), el.getAttribute("data-field"));
+      if(action === "stash-single") saveOne(el.getAttribute("data-field"));
+      if(action === "stash"){
+        const which = el.getAttribute("data-field");
+        if(which === "check") saveCheck();
+        if(which === "spark") saveSection("spark");
+        if(which === "specific") saveSection("specific");
+      }
+      if(action === "switch-character") switchCharacter(Number(el.getAttribute("data-index")));
+      if(action === "cycle-trait-status") cycleTraitStatus(Number(el.getAttribute("data-index")));
+    });
+
+
+    $("charName").addEventListener("input", (e) => updateCharacterField("name", e.target.value));
+    $("charDetails").addEventListener("input", (e) => updateCharacterField("details", e.target.value));
+    $("addTraitBtn").addEventListener("click", addTrait);
+    $("clearCharacterBtn").addEventListener("click", clearActiveCharacter);
+
+    document.addEventListener("input", (e) => {
+      const el = e.target.closest("[data-action='edit-trait']");
+      if(!el) return;
+      updateTrait(Number(el.getAttribute("data-index")), el.getAttribute("data-part"), el.value);
+    });
+
+    $("scratchpad").addEventListener("input", persistScratch);
+    $("copyBtn").addEventListener("click", async () => {
+      const text = $("scratchpad").value; if (!text) return;
+      try { await navigator.clipboard.writeText(text); showToast("Copied"); }
+      catch (err) { const ta = $("scratchpad"); ta.select(); document.execCommand("copy"); window.getSelection().removeAllRanges(); showToast("Copied"); }
+    });
+    $("clearBtn").addEventListener("click", () => {
+      const ta = $("scratchpad"); if(!ta.value) return; undoStack.push(ta.value); ta.value = ""; persistScratch(); showToast("Cleared");
+    });
+    $("undoBtn").addEventListener("click", () => {
+      if(!undoStack.length) return; $("scratchpad").value = undoStack.pop(); persistScratch(); showToast("Undone");
+    });
+
+    restoreScratch();
+    restoreCharacters();
+    renderCharacterSheet();
+    (async () => {
+      rollCheck();
+      await new Promise(r => setTimeout(r, 50));
+      rollSection("spark");
+      await new Promise(r => setTimeout(r, 50));
+      rollSection("specific");
+    })();
+  </script>
+</body>
+</html>
