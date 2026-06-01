@@ -241,7 +241,7 @@
     .legend-item{ display:flex; gap: 6px; align-items:center; }
     .legend-swatch{ width: 20px; height: 20px; border-radius: 3px; border: 1.5px dashed rgba(0,0,0,.20); background: rgba(255,255,255,.72); }
     .legend-swatch.default{ border-style: solid; background: rgba(0,0,0,.3); }
-    .legend-swatch.prevalent{ border-style: solid; border-width: 2.5px; border-color: #000; background: rgba(0,0,0,.6); box-shadow: none; }
+    .legend-swatch.prevalent{ border-style: solid; border-width: 2.5px; border-color: #000; background: rgba(0,0,0,.5); box-shadow: none; }
     .legend-swatch.temporary{ border-style: solid; border-width: 1px; background: repeating-linear-gradient(135deg, rgba(0,0,0,.4) 0 3px, transparent 3px 6px); }
     @media (max-width: 520px){
       .traits-head{ grid-template-columns: 40px 1fr 68px; gap: 8px; }
@@ -263,9 +263,22 @@
       position: fixed; left: 50%; transform: translateX(-50%); bottom: var(--dock-gap); width: min(980px, calc(100% - 28px)); z-index: 999;
       padding: 10px 12px 12px; background: rgba(255,255,255,.10); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       border-radius: calc(var(--radius) + 6px); border: 1px solid rgba(255,255,255,.18);
+      transition: padding .18s ease, background .18s ease;
     }
-    .scratchpad-card{ margin: 0; background: rgba(255,255,255,.30); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 -10px 24px rgba(0,0,0,.10); padding: 14px; }
+    .scratchpad-card{ margin: 0; background: rgba(255,255,255,.30); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 -10px 24px rgba(0,0,0,.10); padding: 14px; transition: padding .18s ease; }
     .scratchpad-card textarea{ min-height: 110px; max-height: 28vh; resize: vertical; }
+    .scratchpad-head{ margin-bottom: 10px; }
+    .scratch-toggle{
+      appearance:none; border: 1px solid var(--line); background: rgba(255,255,255,.75); color: var(--ink);
+      border-radius: 999px; width: 30px; height: 30px; display:grid; place-items:center; cursor:pointer;
+      font-family: "Crimson Text", Georgia, serif; font-weight: 800; font-size: 18px; line-height: 1;
+      box-shadow: 0 6px 14px rgba(0,0,0,.04);
+    }
+    .scratch-toggle:active{ transform: translateY(1px); }
+    .scratch-dock.collapsed{ padding: 8px 12px; }
+    .scratch-dock.collapsed .scratchpad-card{ padding: 10px 14px; cursor:pointer; }
+    .scratch-dock.collapsed .scratchpad-head{ margin-bottom: 0; }
+    .scratch-dock.collapsed .scratch{ display:none; }
 
     .toast{
       position: fixed; left: 50%; top: 80px; transform: translateX(-50%); background: rgba(0,0,0,.86); color: #fff;
@@ -371,8 +384,8 @@
       </section>
 
       <div class="scratch-dock" id="scratchDock">
-        <section class="card scratchpad-card">
-          <h2>Scratchpad</h2>
+        <section class="card scratchpad-card" id="scratchpadCard">
+          <h2 class="scratchpad-head">Scratchpad <button class="scratch-toggle" id="scratchToggleBtn" type="button" aria-label="Collapse scratchpad" aria-expanded="true">−</button></h2>
           <div class="scratch">
             <textarea id="scratchpad" placeholder="Saved lines show up here…"></textarea>
             <div class="inline-actions">
@@ -935,6 +948,7 @@
     let currentCheck = null;
     let doubleChoices = [];
     const LS_KEY = "triple_o_scratchpad_v1";
+    const SCRATCH_COLLAPSED_KEY = "triple_o_scratchpad_collapsed_v1";
     const undoStack = [];
 
     const CHARACTER_COUNT = 6;
@@ -1181,6 +1195,25 @@
     function persistScratch(){ try { localStorage.setItem(LS_KEY, $("scratchpad").value); } catch(e) {} }
     function restoreScratch(){ try { const v = localStorage.getItem(LS_KEY); if (v != null) $("scratchpad").value = v; } catch(e) {} }
 
+    function setScratchCollapsed(isCollapsed){
+      const dock = $("scratchDock");
+      const toggle = $("scratchToggleBtn");
+      dock.classList.toggle("collapsed", isCollapsed);
+      toggle.textContent = isCollapsed ? "+" : "−";
+      toggle.setAttribute("aria-label", isCollapsed ? "Expand scratchpad" : "Collapse scratchpad");
+      toggle.setAttribute("aria-expanded", isCollapsed ? "false" : "true");
+      try { localStorage.setItem(SCRATCH_COLLAPSED_KEY, isCollapsed ? "1" : "0"); } catch(e) {}
+    }
+
+    function restoreScratchCollapsed(){
+      try { setScratchCollapsed(localStorage.getItem(SCRATCH_COLLAPSED_KEY) === "1"); }
+      catch(e) { setScratchCollapsed(false); }
+    }
+
+    function toggleScratchpad(){
+      setScratchCollapsed(!$("scratchDock").classList.contains("collapsed"));
+    }
+
     function appendToScratch(text){
       const ta = $("scratchpad"); const trimmed = (text ?? "").toString().trim(); if(!trimmed) return;
       undoStack.push(ta.value); ta.value = ta.value ? (ta.value.trimEnd() + "\n" + trimmed) : trimmed;
@@ -1236,6 +1269,13 @@
     $("charDetails").addEventListener("input", (e) => updateCharacterField("details", e.target.value));
     $("addTraitBtn").addEventListener("click", addTrait);
     $("clearCharacterBtn").addEventListener("click", clearActiveCharacter);
+    $("scratchToggleBtn").addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleScratchpad();
+    });
+    $("scratchpadCard").addEventListener("click", (e) => {
+      if($("scratchDock").classList.contains("collapsed")) setScratchCollapsed(false);
+    });
 
     document.addEventListener("input", (e) => {
       const el = e.target.closest("[data-action='edit-trait']");
@@ -1257,6 +1297,7 @@
     });
 
     restoreScratch();
+    restoreScratchCollapsed();
     restoreCharacters();
     renderCharacterSheet();
     (async () => {
