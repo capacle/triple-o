@@ -1110,8 +1110,9 @@
     }
     function renderTraitRows(){
       const rows = $("traitRows");
+      const characterIndex = activeCharacter;
       rows.innerHTML = "";
-      characters[activeCharacter].traits.forEach((trait, index) => {
+      characters[characterIndex].traits.forEach((trait, index) => {
         const row = document.createElement("div");
         row.className = "trait-row";
 
@@ -1121,6 +1122,7 @@
         stateBtn.title = "Trait status: " + titleCase(trait.status) + ". Click to cycle.";
         stateBtn.setAttribute("aria-label", "Trait " + (index + 1) + " status: " + trait.status);
         stateBtn.setAttribute("data-action", "cycle-trait-status");
+        stateBtn.setAttribute("data-character-index", characterIndex);
         stateBtn.setAttribute("data-index", index);
 
         const traitInput = document.createElement("input");
@@ -1128,7 +1130,9 @@
         traitInput.type = "text";
         traitInput.value = trait.text;
         traitInput.placeholder = "Trait " + (index + 1);
+        traitInput.autocomplete = "off";
         traitInput.setAttribute("data-action", "edit-trait");
+        traitInput.setAttribute("data-character-index", characterIndex);
         traitInput.setAttribute("data-index", index);
         traitInput.setAttribute("data-part", "text");
 
@@ -1138,7 +1142,9 @@
         categoryInput.value = trait.category;
         categoryInput.placeholder = "—";
         categoryInput.maxLength = 8;
+        categoryInput.autocomplete = "off";
         categoryInput.setAttribute("data-action", "edit-trait");
+        categoryInput.setAttribute("data-character-index", characterIndex);
         categoryInput.setAttribute("data-index", index);
         categoryInput.setAttribute("data-part", "category");
 
@@ -1151,7 +1157,9 @@
     function renderCharacterSheet(){
       const char = characters[activeCharacter];
       $("charName").value = char.name;
+      $("charName").setAttribute("data-character-index", activeCharacter);
       $("charDetails").value = char.details;
+      $("charDetails").setAttribute("data-character-index", activeCharacter);
       renderCharacterTabs();
       renderTraitRows();
     }
@@ -1159,20 +1167,23 @@
       activeCharacter = Math.max(0, Math.min(CHARACTER_COUNT - 1, index));
       renderCharacterSheet();
     }
-    function updateCharacterField(field, value){
-      characters[activeCharacter][field] = value;
+    function updateCharacterField(characterIndex, field, value){
+      const char = characters[characterIndex];
+      if(!char) return;
+      char[field] = value;
       persistCharacters();
       if(field === "name") renderCharacterTabs();
     }
-    function cycleTraitStatus(index){
-      const trait = characters[activeCharacter].traits[index];
+    function cycleTraitStatus(characterIndex, index){
+      const trait = characters[characterIndex]?.traits?.[index];
+      if(!trait) return;
       const current = STATUS_ORDER.indexOf(trait.status);
       trait.status = STATUS_ORDER[(current + 1) % STATUS_ORDER.length];
       persistCharacters();
-      renderTraitRows();
+      if(characterIndex === activeCharacter) renderTraitRows();
     }
-    function updateTrait(index, part, value){
-      const trait = characters[activeCharacter].traits[index];
+    function updateTrait(characterIndex, index, part, value){
+      const trait = characters[characterIndex]?.traits?.[index];
       if(!trait) return;
       if(part === "text") trait.text = value;
       if(part === "category") trait.category = value;
@@ -1261,12 +1272,18 @@
         if(which === "specific") saveSection("specific");
       }
       if(action === "switch-character") switchCharacter(Number(el.getAttribute("data-index")));
-      if(action === "cycle-trait-status") cycleTraitStatus(Number(el.getAttribute("data-index")));
+      if(action === "cycle-trait-status") {
+        cycleTraitStatus(Number(el.getAttribute("data-character-index")), Number(el.getAttribute("data-index")));
+      }
     });
 
 
-    $("charName").addEventListener("input", (e) => updateCharacterField("name", e.target.value));
-    $("charDetails").addEventListener("input", (e) => updateCharacterField("details", e.target.value));
+    $("charName").addEventListener("input", (e) => {
+      updateCharacterField(Number(e.target.getAttribute("data-character-index")), "name", e.target.value);
+    });
+    $("charDetails").addEventListener("input", (e) => {
+      updateCharacterField(Number(e.target.getAttribute("data-character-index")), "details", e.target.value);
+    });
     $("addTraitBtn").addEventListener("click", addTrait);
     $("clearCharacterBtn").addEventListener("click", clearActiveCharacter);
     $("scratchToggleBtn").addEventListener("click", (e) => {
@@ -1280,7 +1297,7 @@
     document.addEventListener("input", (e) => {
       const el = e.target.closest("[data-action='edit-trait']");
       if(!el) return;
-      updateTrait(Number(el.getAttribute("data-index")), el.getAttribute("data-part"), el.value);
+      updateTrait(Number(el.getAttribute("data-character-index")), Number(el.getAttribute("data-index")), el.getAttribute("data-part"), el.value);
     });
 
     $("scratchpad").addEventListener("input", persistScratch);
